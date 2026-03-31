@@ -60,8 +60,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-  # assets:
-  #   - assets\istockphoto-1384532150-612x612.jpg
+  assets:
+    - assets/istockphoto-1384532150-612x612-removebg-preview (1).png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

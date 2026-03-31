@@ -18,7 +18,7 @@ void main() {
       
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 13, 54, 15)),
       ),
-      home: const RegisterView(),
+      home: const HomePage(),
       // routes: const HomePage(),
       routes: {
         loginRoute: (context) => const LoginView(),
