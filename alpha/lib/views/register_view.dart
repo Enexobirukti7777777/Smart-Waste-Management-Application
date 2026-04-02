@@ -1,4 +1,4 @@
-// lib/views/register_view.dart
+
 import 'package:alpha/constants/routes.dart';
 import 'package:alpha/utils/dialog_helper.dart';           
 import 'package:firebase_auth/firebase_auth.dart';
