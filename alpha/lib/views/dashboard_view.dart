@@ -1,11 +1,24 @@
+// lib/views/dashboard_view.dart
 import 'package:alpha/constants/routes.dart';
+import 'package:alpha/localization/app_localizations.dart';   // ← Added
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class DashboardView extends StatelessWidget {
+class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
 
   @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<DashboardView> {
+  bool isAmharic = false; // false = English, true = Amharic
+
+  @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    final loc = AppLocalizations.of(context);   // ← Added for localization
+
     const primaryGreen = Color(0xFF3C8D3E);
 
     return Scaffold(
@@ -13,18 +26,37 @@ class DashboardView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: primaryGreen,
         elevation: 0,
-        title: const Text("Smart Waste Collector", style: TextStyle(color: Colors.white)),
-        leading: IconButton(icon: const Icon(Icons.menu, color: Colors.white), onPressed: () {}),
+        iconTheme: const IconThemeData(
+    color: Colors.white, // ✅ hamburger becomes white
+  ),
+        title: Text(isAmharic ? "ስማርት ቆሻሻ ሰብሳቢ" : "Smart Waste Collector", 
+                   style: const TextStyle(color: Colors.white)),
         actions: [
-          IconButton(icon: const Icon(Icons.notifications_none, color: Colors.white), onPressed: () {}),
+          // Language Switcher
+          TextButton(
+            onPressed: () {
+              setState(() => isAmharic = !isAmharic);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(isAmharic 
+                      ? "ቋንቋ ወደ አማርኛ ተቀይሯል ✓" 
+                      : "Language changed to English ✓"),
+                ),
+              );
+            },
+            child: Text(
+              isAmharic ? "EN" : "አማ",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          ),
         ],
       ),
+      drawer: _buildDrawer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Card
             Container(
               height: 180,
               decoration: BoxDecoration(
@@ -34,44 +66,28 @@ class DashboardView extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              child: const Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    "Smart Waste Collector",
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
             ),
-
             const SizedBox(height: 30),
-            const Text("Services", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
-
+            Text(
+              isAmharic ? "አገልግሎቶች" : "Services",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+            ),
             const SizedBox(height: 16),
 
             _buildServiceCard(
-              context,
-              icon: Icons.local_shipping,
-              title: "Extra Pickup Request",
-              onTap: () => Navigator.pushNamed(context, pickupRequestRoute),
+              isAmharic ? "ተጨማሪ ቆሻሻ መሰብሰቢያ" : "Extra Pickup Request",
+              Icons.local_shipping,
+              () => Navigator.pushNamed(context, pickupRequestRoute),
             ),
-            const SizedBox(height: 12),
-
             _buildServiceCard(
-              context,
-              icon: Icons.chat_bubble_outline,
-              title: "AI Chat",
-              onTap: () => Navigator.pushNamed(context, aiChatRoute),
+              isAmharic ? "ኤአይ ቻት" : "AI Chat",
+              Icons.chat_bubble_outline,
+              () => Navigator.pushNamed(context, aiChatRoute),
             ),
-            const SizedBox(height: 12),
-
             _buildServiceCard(
-              context,
-              icon: Icons.location_on,
-              title: "Track Collector",
-              onTap: () => Navigator.pushNamed(context, trackCollectorRoute),
+              isAmharic ? "ሰብሳቢውን ተከታተል" : "Track Collector",
+              Icons.location_on,
+              () => Navigator.pushNamed(context, trackCollectorRoute),
             ),
           ],
         ),
@@ -92,10 +108,83 @@ class DashboardView extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceCard(BuildContext context, {required IconData icon, required String title, required VoidCallback onTap}) {
+  // Hamburger Menu (Drawer) 
+  Widget _buildDrawer() {
+    return Drawer(
+      
+      backgroundColor: Colors.white,
+      child: Column(
+        children: [
+          // Inside _buildDrawer()
+Container(
+  
+          padding: const EdgeInsets.only(top: 60, bottom: 30),
+          width: double.infinity,
+          color: const Color(0xFF3C8D3E),
+          child: Column(
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                height: 80,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                "Smart Waste Collector",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+          const SizedBox(height: 20),
+
+ListTile(
+  leading: const Icon(Icons.person_outline, color: Color(0xFF3C8D3E)),
+  title: const Text("Profile", style: TextStyle(color: Color(0xFF3C8D3E), fontWeight: FontWeight.w600)),
+  onTap: () {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, profileRoute);
+  },
+),         
+ListTile(
+  leading: const Icon(Icons.history, color: Color(0xFF3C8D3E)),
+  title: const Text("My Requests", style: TextStyle(color: Color(0xFF3C8D3E) ,fontWeight: FontWeight.w600)),
+  onTap: () {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, myRequestsRoute);
+  },
+),          ListTile(leading: const Icon(Icons.payment, color: Color(0xFF3C8D3E)), title: const Text("Payment & Wallet", style: TextStyle(color: Color(0xFF3C8D3E), fontWeight: FontWeight.w600)), onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, paymentRoute);
+          }),
+          ListTile(leading: const Icon(Icons.language, color: Color(0xFF3C8D3E)), title: const Text("Language", style: TextStyle(color: Color(0xFF3C8D3E), fontWeight: FontWeight.w600)), onTap: () => Navigator.pop(context)),
+ListTile(
+  leading: const Icon(Icons.star_outline, color: Color(0xFF3C8D3E)),
+  title: const Text("Rate This App", style: TextStyle(color: Color(0xFF3C8D3E) , fontWeight: FontWeight.w600)),
+  onTap: () {
+    showRateAppDialog(context);
+  },
+),         
+
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text("Logout", style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+            onTap: () => Navigator.pushNamedAndRemoveUntil(context, loginRoute, (route) => false),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceCard(String title, IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -116,4 +205,80 @@ class DashboardView extends StatelessWidget {
       ),
     );
   }
+}
+void showRateAppDialog(BuildContext context) {
+  int rating = 0;
+  //final TextEditingController feedbackController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Text(
+              "Rate This App ",
+              textAlign: TextAlign.center,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("How was your experience?"),
+
+                const SizedBox(height: 40),
+
+                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    return IconButton(
+                      onPressed: () {
+                        setState(() => rating = index + 1);
+                      },
+                      icon: Icon(
+                        index < rating ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                        size: 30,
+                      ),
+                    );
+                  }),
+                ),
+
+                const SizedBox(height: 10),
+
+                // Optional feedback
+                
+              ],
+            ),
+
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Later"),
+              ),
+
+              ElevatedButton(
+                onPressed: rating == 0
+                    ? null
+                    : () {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Thanks for your feedback! "),
+                          ),
+                        );
+                      },
+                child: const Text("Rate Now"),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
 }

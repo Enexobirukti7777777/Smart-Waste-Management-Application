@@ -7,3 +7,7 @@ const String pickupRequestRoute = '/pickup-request';
 const String aiChatRoute = '/ai-chat';
 const String trackCollectorRoute = '/track-collector';
 const String statusCheckRoute = '/status-check';
+const String paymentRoute = '/payment';
+const String profileRoute = '/profile';
+const String myRequestsRoute = '/my-requests';
+const String suggestionsRoute = '/suggestions';

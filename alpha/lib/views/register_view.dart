@@ -1,6 +1,6 @@
-
+// lib/views/register_view.dart
 import 'package:alpha/constants/routes.dart';
-import 'package:alpha/utils/dialog_helper.dart';           
+import 'package:alpha/utils/dialog_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -12,9 +12,8 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-  int _step = 1; // 1 = Personal Info, 2 = Address, 3 = Success
+  int _step = 1;
 
-  // Controllers
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -45,6 +44,7 @@ class _RegisterViewState extends State<RegisterView> {
   Future<void> _register() async {
     setState(() => _isLoading = true);
 
+    final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final confirm = _confirmPasswordController.text.trim();
@@ -55,8 +55,8 @@ class _RegisterViewState extends State<RegisterView> {
       return;
     }
 
-    if (email.isEmpty || password.isEmpty) {
-      await showErrorDialog(context, 'Email and Password are required');
+    if (email.isEmpty || password.isEmpty || name.isEmpty) {
+      await showErrorDialog(context, 'Full Name, Email and Password are required');
       setState(() => _isLoading = false);
       return;
     }
@@ -67,9 +67,13 @@ class _RegisterViewState extends State<RegisterView> {
         password: password,
       );
 
-      await credential.user?.sendEmailVerification();
+      // Save the user's full name
+      await credential.user?.updateDisplayName(name);
 
-      // TODO: Save additional user data to Firestore later
+      // Refresh user data
+      await credential.user?.reload();
+
+      await credential.user?.sendEmailVerification();
 
       setState(() {
         _step = 3;
@@ -100,7 +104,7 @@ class _RegisterViewState extends State<RegisterView> {
         backgroundColor: primaryGreen,
         foregroundColor: Colors.white,
         elevation: 0,
-        toolbarHeight: 1, // Minimal appbar like your design
+        toolbarHeight: 1,
       ),
       body: SafeArea(
         child: _step == 3
@@ -110,22 +114,12 @@ class _RegisterViewState extends State<RegisterView> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-
-                    // Logo
-                    Image.asset(
-                      'assets/images/logo.png', // ← Change to your actual logo path
-                      height: 100,
-                    ),
-
+                    Image.asset('assets/images/logo.png', height: 100),
                     const SizedBox(height: 30),
 
                     Text(
                       _step == 1 ? 'Personal Information' : 'Address Details',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2E7D32),
-                      ),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
                     ),
 
                     const SizedBox(height: 8),
@@ -139,19 +133,13 @@ class _RegisterViewState extends State<RegisterView> {
                     if (_step == 1) ...[
                       _buildTextField(_nameController, 'Full Name', 'Enter full name', Icons.person_outline),
                       const SizedBox(height: 18),
-                      _buildTextField(_emailController, 'Email Address', 'Enter your email', Icons.email_outlined,
-                          keyboard: TextInputType.emailAddress),
+                      _buildTextField(_emailController, 'Email Address', 'Enter your email', Icons.email_outlined, keyboard: TextInputType.emailAddress),
                       const SizedBox(height: 18),
-                      _buildPasswordField(_passwordController, 'Password', _obscurePassword, () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      }),
+                      _buildPasswordField(_passwordController, 'Password', _obscurePassword, () => setState(() => _obscurePassword = !_obscurePassword)),
                       const SizedBox(height: 18),
-                      _buildPasswordField(_confirmPasswordController, 'Confirm Password', _obscureConfirm, () {
-                        setState(() => _obscureConfirm = !_obscureConfirm);
-                      }),
+                      _buildPasswordField(_confirmPasswordController, 'Confirm Password', _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm)),
                       const SizedBox(height: 18),
-                      _buildTextField(_phoneController, 'Phone', 'Enter phone number', Icons.phone_outlined,
-                          keyboard: TextInputType.phone),
+                      _buildTextField(_phoneController, 'Phone', 'Enter phone number', Icons.phone_outlined, keyboard: TextInputType.phone),
                     ] else ...[
                       _buildTextField(_cityController, 'City', 'Enter your city', Icons.location_city),
                       const SizedBox(height: 18),
@@ -170,12 +158,7 @@ class _RegisterViewState extends State<RegisterView> {
                             activeColor: primaryGreen,
                             onChanged: (val) => setState(() => _agreeToTerms = val ?? false),
                           ),
-                          const Expanded(
-                            child: Text(
-                              'I agree to the terms & policy',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
+                          const Expanded(child: Text('I agree to the terms & policy', style: TextStyle(fontSize: 14))),
                         ],
                       ),
 
@@ -225,24 +208,16 @@ class _RegisterViewState extends State<RegisterView> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                           child: _isLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                                )
+                              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
                               : Text(_step == 1 ? 'Next' : 'Agree and Register'),
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 20),
-
                     TextButton(
                       onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (_) => false),
-                      child: const Text(
-                        'Back to Login',
-                        style: TextStyle(color: primaryGreen, fontWeight: FontWeight.w600),
-                      ),
+                      child: const Text('Back to Login', style: TextStyle(color: primaryGreen, fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
@@ -251,14 +226,8 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 
-  // Reusable TextField
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    String hint,
-    IconData icon, {
-    TextInputType keyboard = TextInputType.text,
-  }) {
+  // Reusable widgets (unchanged)
+  Widget _buildTextField(TextEditingController controller, String label, String hint, IconData icon, {TextInputType keyboard = TextInputType.text}) {
     return TextField(
       controller: controller,
       keyboardType: keyboard,
@@ -268,22 +237,13 @@ class _RegisterViewState extends State<RegisterView> {
         prefixIcon: Icon(icon, color: Colors.green.shade700),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       ),
     );
   }
 
-  // Reusable Password Field
-  Widget _buildPasswordField(
-    TextEditingController controller,
-    String label,
-    bool obscure,
-    VoidCallback toggle,
-  ) {
+  Widget _buildPasswordField(TextEditingController controller, String label, bool obscure, VoidCallback toggle) {
     return TextField(
       controller: controller,
       obscureText: obscure,
@@ -291,21 +251,14 @@ class _RegisterViewState extends State<RegisterView> {
         labelText: label,
         hintText: label,
         prefixIcon: const Icon(Icons.lock_outline, color: Colors.green),
-        suffixIcon: IconButton(
-          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
-          onPressed: toggle,
-        ),
+        suffixIcon: IconButton(icon: Icon(obscure ? Icons.visibility_off : Icons.visibility), onPressed: toggle),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       ),
     );
   }
 
-  // Success Screen
   Widget _buildSuccessScreen(Color primaryGreen) {
     return Center(
       child: Padding(
@@ -315,39 +268,17 @@ class _RegisterViewState extends State<RegisterView> {
           children: [
             Container(
               padding: const EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(color: Colors.black12, blurRadius: 20, offset: const Offset(0, 10)),
-                ],
-              ),
-              child: Icon(
-                Icons.check_circle,
-                size: 110,
-                color: primaryGreen,
-              ),
+              decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 20)]),
+              child: Icon(Icons.check_circle, size: 110, color: primaryGreen),
             ),
             const SizedBox(height: 40),
-            const Text(
-              'Successful Registration!',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
-            ),
+            const Text('Successful Registration!', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
             const SizedBox(height: 12),
-            const Text(
-              'Please check your email to verify your account.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
+            const Text('Please check your email to verify your account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: Colors.grey)),
             const SizedBox(height: 50),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (_) => false),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryGreen,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: primaryGreen, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
               child: const Text('Back to Login', style: TextStyle(fontSize: 17)),
             ),
           ],
