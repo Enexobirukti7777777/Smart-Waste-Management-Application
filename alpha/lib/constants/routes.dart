@@ -11,3 +11,4 @@ const String paymentRoute = '/payment';
 const String profileRoute = '/profile';
 const String myRequestsRoute = '/my-requests';
 const String suggestionsRoute = '/suggestions';
+const String pickupTypeSelectionRoute = '/pickup-type-selection';

@@ -1,3 +1,4 @@
+// lib/views/pickup_request_view.dart
 import 'package:alpha/constants/routes.dart';
 import 'package:flutter/material.dart';
 
@@ -9,13 +10,18 @@ class PickupRequestView extends StatefulWidget {
 }
 
 class _PickupRequestViewState extends State<PickupRequestView> {
-  bool isRecyclable = true;
+  late bool isRecyclable;
+
+  bool plastic = false;
+  bool metal = false;
+  bool others = false;
   final _weightController = TextEditingController();
+  final _packsController = TextEditingController();
 
   @override
-  void dispose() {
-    _weightController.dispose();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    isRecyclable = ModalRoute.of(context)?.settings.arguments as bool? ?? true;
   }
 
   @override
@@ -26,75 +32,36 @@ class _PickupRequestViewState extends State<PickupRequestView> {
       backgroundColor: const Color(0xFFF2FFEE),
       appBar: AppBar(
         backgroundColor: primaryGreen,
-        title: const Text("Pickup Request"),
-        foregroundColor: Colors.white,
+        title: Text(isRecyclable ? "Recyclable Waste" : "Non-Recyclable Waste"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Type", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
+            if (isRecyclable) ...[
+              const Text("Select Type", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              CheckboxListTile(title: const Text("Plastic"), value: plastic, onChanged: (v) => setState(() => plastic = v!)),
+              CheckboxListTile(title: const Text("Metal"), value: metal, onChanged: (v) => setState(() => metal = v!)),
+              CheckboxListTile(title: const Text("Others"), value: others, onChanged: (v) => setState(() => others = v!)),
 
-            Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text("Recyclable"),
-                    value: true,
-                    groupValue: isRecyclable,
-                    activeColor: primaryGreen,
-                    onChanged: (val) => setState(() => isRecyclable = val!),
-                  ),
-                ),
-                Expanded(
-                  child: RadioListTile<bool>(
-                    title: const Text("Non-Recyclable"),
-                    value: false,
-                    groupValue: isRecyclable,
-                    activeColor: primaryGreen,
-                    onChanged: (val) => setState(() => isRecyclable = val!),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 30),
-            const Text("Weight in kg", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _weightController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: "Enter weight",
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
+              const SizedBox(height: 30),
+              const Text("Weight (kg)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              TextField(controller: _weightController, keyboardType: TextInputType.number),
+            ] else ...[
+              const Text("Number of Packs", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              TextField(controller: _packsController, keyboardType: TextInputType.number),
+            ],
 
             const Spacer(),
 
             ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Pickup request submitted successfully!")),
-                );
-                Navigator.pushNamed(context, statusCheckRoute);
-              },
+              onPressed: () => Navigator.pushNamed(context, statusCheckRoute),
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryGreen,
                 minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text("Submit", style: TextStyle(fontSize: 18)),
-            ),
-
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => Navigator.pushNamed(context, statusCheckRoute),
-              child: const Text("Show Status", style: TextStyle(fontSize: 16, color: primaryGreen)),
+              child: const Text("Submit"),
             ),
           ],
         ),

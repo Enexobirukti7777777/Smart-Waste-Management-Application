@@ -8,11 +8,11 @@ import 'package:alpha/views/login_view.dart';
 import 'package:alpha/views/my_requests_view.dart';
 import 'package:alpha/views/payment_view.dart';
 import 'package:alpha/views/pickup_request_view.dart';
+import 'package:alpha/views/pickup_type_selection_view.dart';
 import 'package:alpha/views/profile_view.dart';
 import 'package:alpha/views/register_view.dart';
 import 'package:alpha/views/role_selection_view.dart';
 import 'package:alpha/views/status_check_view.dart';
-import 'package:alpha/views/suggestions_view.dart';
 import 'package:alpha/views/track_collector_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
         statusCheckRoute: (context) => const StatusCheckView(),
         paymentRoute: (context) => const PaymentView(),
         myRequestsRoute: (context) => const MyRequestsView(),
-        suggestionsRoute: (context) => const SuggestionsView(),
+        pickupTypeSelectionRoute: (context) => const PickupTypeSelectionView(),
 
       },
     );

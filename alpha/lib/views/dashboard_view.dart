@@ -13,7 +13,7 @@ class DashboardView extends StatefulWidget {
 
 class _DashboardViewState extends State<DashboardView> {
   bool isAmharic = false; // false = English, true = Amharic
-
+ int _currentIndex = 0;       
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
@@ -77,7 +77,7 @@ class _DashboardViewState extends State<DashboardView> {
             _buildServiceCard(
               isAmharic ? "ተጨማሪ ቆሻሻ መሰብሰቢያ" : "Extra Pickup Request",
               Icons.local_shipping,
-              () => Navigator.pushNamed(context, pickupRequestRoute),
+              () => Navigator.pushNamed(context, pickupTypeSelectionRoute),
             ),
             _buildServiceCard(
               isAmharic ? "ኤአይ ቻት" : "AI Chat",
@@ -92,19 +92,57 @@ class _DashboardViewState extends State<DashboardView> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: primaryGreen,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 0,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.recycling), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.check_circle), label: ""),
-        ],
-      ),
+      // Inside your DashboardView build method
+
+bottomNavigationBar: BottomNavigationBar(
+  type: BottomNavigationBarType.fixed,
+  selectedItemColor: primaryGreen,
+  unselectedItemColor: Colors.grey,
+  currentIndex: _currentIndex,           // We'll add this
+  onTap: (index) {
+    setState(() => _currentIndex = index);
+
+    switch (index) {
+      case 0: // Home
+        // Already on dashboard
+        break;
+      case 1: // Map / Track
+        Navigator.pushNamed(context, trackCollectorRoute);
+        break;
+      case 2: // Center Big Button - Pickup Request
+        Navigator.pushNamed(context, pickupRequestRoute);
+        break;
+      case 3: // AI Chat
+        Navigator.pushNamed(context, aiChatRoute);
+        break;
+      case 4: // Profile
+        Navigator.pushNamed(context, profileRoute);
+        break;
+    }
+  },
+  items: const [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: "Home",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.location_on),
+      label: "Track",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.recycling, size: 32),   // Bigger center icon
+      label: "Pickup",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.chat),
+      label: "Chat",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person),
+      label: "Profile",
+    ),
+  ],
+),
     );
   }
 
