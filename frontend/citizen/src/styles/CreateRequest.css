@@ -1,0 +1,97 @@
+.create-request-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: #ffffff;
+}
+
+.request-form-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: #f7fff7; /* Soft green tint from your design */
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.request-page-title {
+  color: #2d8a39;
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.category-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.request-section-label {
+  color: #2d8a39;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.type-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+}
+
+.type-option input {
+  width: 20px;
+  height: 20px;
+  accent-color: #2d8a39;
+}
+
+.type-text {
+  text-transform: capitalize;
+}
+
+/* Success View Styles */
+.request-success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.success-icon-wrapper {
+  width: 70px;
+  height: 70px;
+  background-color: #2d8a39;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.success-message {
+  color: #2d8a39;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  line-height: 1.4;
+}
+
+.success-actions {
+  width: 100%;
+  max-width: 320px;
+}

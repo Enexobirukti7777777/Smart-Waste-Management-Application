@@ -1,17 +1,105 @@
-.page-container {
-  padding: 30px;
-  background-color: #f5f7fa;
+.my-request-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   min-height: 100vh;
+  padding: 50px 20px;
+  background-color: #ffffff;
 }
 
-.page-title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333;
+.status-card {
+  width: 100%;
+  max-width: 460px;
+  background-color: #f7fff7;
+  padding: 40px;
+  border-radius: 28px;
+  box-shadow: 0 10px 25px rgba(45, 138, 57, 0.05);
 }
 
-.requests-list {
+.status-header {
+  color: #2d8a39;
+  text-align: center;
+  margin-bottom: 45px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.timeline-wrapper {
+  margin-bottom: 40px;
+  padding-left: 10px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 25px;
+  height: 90px; /* Vertical spacing between steps */
+}
+
+.timeline-left {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  align-items: center;
+}
+
+.status-node {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 2;
+  transition: background-color 0.3s;
+}
+
+.status-node.completed {
+  background-color: #2d8a39;
+}
+
+.status-node.active {
+  background-color: #2d8a39;
+  box-shadow: 0 0 0 5px rgba(45, 138, 57, 0.15);
+}
+
+.status-connector {
+  width: 2.5px;
+  height: 100%;
+  background-color: #e0e0e0;
+  margin-top: -2px;
+}
+
+.status-connector.is-filled {
+  background-color: #2d8a39;
+}
+
+.timeline-content {
+  text-align: left;
+  padding-top: 4px;
+}
+
+.status-label {
+  font-weight: 600;
+  margin: 0;
+  color: #999;
+  font-size: 17px;
+}
+
+.status-label.completed,
+.status-label.active {
+  color: #2b2b2b;
+}
+
+.status-timestamp {
+  display: block;
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 6px;
+}
+
+.my-request-footer {
+  margin-top: 30px;
 }

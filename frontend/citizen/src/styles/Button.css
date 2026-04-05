@@ -1,0 +1,33 @@
+/* Button.css */
+.base-button {
+  width: 100%;
+  padding: 15px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition:
+    transform 0.1s active,
+    background-color 0.2s;
+}
+
+.base-button.primary {
+  background-color: #2d8a39;
+  color: #ffffff;
+  border: none;
+}
+
+.base-button.primary:hover {
+  background-color: #246e2d;
+}
+
+.base-button.secondary {
+  background-color: transparent;
+  color: #2d8a39;
+  border: 2px solid #2d8a39;
+}
+
+.base-button.secondary:hover {
+  background-color: #f1f8f2;
+}
