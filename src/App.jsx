@@ -8,8 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import MyRequests from "./pages/MyRequests";
-import CreateRequest from "./pages/CreateRequest";
+import PickupRequest from "./components/PickupRequest";
 
 function App() {
   return (
@@ -27,8 +26,7 @@ function App() {
           <Route path="ai-chat" element={<ChatBot />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="my-requests" element={<MyRequests />} />
-          <Route path="create-request" element={<CreateRequest />} />
+          <Route path="/pickup-request" element={<PickupRequest />} />
         </Route>
 
         {/* 404 */}

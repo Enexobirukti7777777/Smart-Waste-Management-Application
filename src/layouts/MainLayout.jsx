@@ -10,7 +10,10 @@ const MainLayout = () => {
 
   return (
     <>
+      {/* Sidebar */}
       <Sidebar show={sidebarOpen} onHide={() => setSidebarOpen(false)} />
+
+      {/* Main Content Area */}
       <div className="d-flex flex-column flex-grow-1">
         <Navbar onMenuClick={toggleSidebar} />
         <main className="main-content flex-grow-1">

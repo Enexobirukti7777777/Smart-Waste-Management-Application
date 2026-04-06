@@ -1,7 +1,22 @@
 import { NavLink } from "react-router-dom";
 import { HouseDoorFill, GeoAlt, ChatDots, Person } from "react-bootstrap-icons";
+import { useState, useEffect } from "react";
 
 export default function Sidebar({ show, onHide }) {
+  const [user, setUser] = useState({
+    name: "Guest User",
+    role: "Eco Warrior",
+    avatar: "https://i.pravatar.cc/48?u=guest",
+  });
+
+  // Load user from localStorage when sidebar opens
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, [show]); // Re-load when sidebar is shown
+
   return (
     <div
       className={`offcanvas offcanvas-start ${show ? "show" : ""}`}
@@ -23,7 +38,6 @@ export default function Sidebar({ show, onHide }) {
           <i className="bi bi-tree-fill text-success fs-3"></i>
           <span className="fw-bold fs-4 text-success">Kuralewo</span>
         </NavLink>
-
         <button
           type="button"
           className="btn-close"
@@ -86,20 +100,21 @@ export default function Sidebar({ show, onHide }) {
           </ul>
         </div>
 
-        {/* User Profile Section */}
+        {/* Dynamic User Profile at Bottom */}
         <div className="p-3 border-top mt-auto">
           <div className="d-flex align-items-center gap-3 bg-light rounded-3 p-3">
             <img
-              src="https://i.pravatar.cc/48?u=john"
-              alt="User"
-              className="rounded-circle"
+              src={user.avatar}
+              alt={user.name}
+              className="rounded-circle border border-success border-2"
               width={48}
               height={48}
             />
-            <div>
-              <div className="fw-semibold">John Doe</div>
-              <small className="text-muted">Eco Warrior</small>
+            <div className="flex-grow-1">
+              <div className="fw-semibold text-dark">{user.name}</div>
+              <small className="text-success">{user.role}</small>
             </div>
+            <i className="bi bi-chevron-right text-muted"></i>
           </div>
         </div>
       </div>

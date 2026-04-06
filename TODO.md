@@ -1,10 +1,1 @@
-# Task: Fix routing/navigation so all pages appear and work (not just Contact)
-
-## Steps:
-
-- [x] Step 1: Fix Navbar.jsx NavLink paths to match routes and update labels
-- [x] Step 1: Fix Navbar.jsx NavLink paths to match routes and update labels
-- [x] Step 2: Clean up MainLayout.jsx - remove duplicate Outlet and stray nav
-      Step 3: Update Home.jsx - remove direct AboutUs/ContactUs component renders ✅
-- [x] Step 4: Test locally with `npm run dev` and verify navigation
-- [x] Step 5: Complete task
+# Home Page Landing Improvements TODO\n\n## [x] Step 1: Create TODO.md tracking file\n## [x] Step 2: Analyze files & create plan (completed)\n## [x] Step 3: Update src/pages/Home.jsx (narrowed welcome col-xl-8 lg-10, centered feature row w/ maxWidth 1000px & col-xl-4 all cards + keys - complete)\n## [x] Step 4: Enhance src/styles/Index.css (welcome refined, features uniform height/spacing, leaf-bg full-width w/ sidebar compat, enhanced responsive/mobile stacking - complete)\n\n## [x] Step 5: Test & Complete\n - Home page now features perfectly centered welcome card (max-750px), three feature cards in centered row (1000px container, xl-4 equal width), full-width hero respecting sidebar margins, excellent mobile responsiveness (stacked col-12 cards w/ adjusted padding/heights).\n - Works seamlessly with fixed left sidebar, smooth hovers, good spacing.\n\n✅ Task complete! View at http://localhost:5173

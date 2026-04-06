@@ -1,15 +1,15 @@
 /* src/styles/index.css */
 
-/* ==================== ROOT & COLOR VARIABLES ==================== */
+/* ==================== ROOT VARIABLES ==================== */
 :root {
   --eco-green: #2e7d32;
   --eco-green-dark: #1b5e20;
-  --bg: #f8fff8;
-  --text: #1a1a1a;
+  --bg-light: #f8fff8;
   --card-bg: #ffffff;
+  --text: #1a1a1a;
 }
 
-/* ==================== GLOBAL STYLES ==================== */
+/* ==================== GLOBAL RESET ==================== */
 body {
   margin: 0;
   font-family:
@@ -20,29 +20,41 @@ body {
     sans-serif;
   background: linear-gradient(135deg, #f8fff8 0%, #e8f5e9 100%);
   color: var(--text);
-  min-height: 100vh;
   line-height: 1.6;
-}
-
-html,
-body,
-#root {
-  min-height: 100vh;
-  height: auto;
-  margin: 0;
-  padding: 0;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* ==================== WELCOME CARD & HERO ==================== */
+/* ==================== MAIN LAYOUT ==================== */
+.main-content {
+  transition: margin-left 0.3s ease;
+  min-height: calc(100vh - 80px);
+  padding: 30px 20px;
+}
+
+/* Desktop - Sidebar space */
+@media (min-width: 992px) {
+  .main-content {
+    margin-left: 260px;
+    padding: 40px 40px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 991.98px) {
+  .main-content {
+    margin-left: 0 !important;
+    padding: 20px 15px;
+  }
+}
+
+/* ==================== HERO & LEAF BACKGROUND ==================== */
 .leaf-bg {
   position: relative;
-  width: 100%;
-  min-height: 100vh;
-  padding-bottom: 80px;
+  background: linear-gradient(135deg, #f8fff8 0%, #e8f5e9 100%);
+  padding: 100px 0 80px;
   overflow: hidden;
 }
 
@@ -51,39 +63,37 @@ html {
   position: absolute;
   bottom: -80px;
   right: -60px;
-  font-size: 140px;
-  opacity: 0.07;
+  font-size: 160px;
+  opacity: 0.08;
   pointer-events: none;
   transform: rotate(-12deg);
   z-index: 0;
 }
 
+/* ==================== WELCOME CARD ==================== */
 .welcome-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  max-width: 900px;
-  margin: 0 auto; /* Centers the card */
-  padding: 40px 30px;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(46, 125, 50, 0.18);
+  padding: 60px 50px;
+  max-width: 750px;
+  margin: 0 auto;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
-.cta-btn {
-  background: var(--eco-green);
-  border: none;
-  font-weight: 600;
-  padding: 0.9rem 2.6rem;
-  border-radius: 50px;
-  box-shadow: 0 5px 18px rgba(46, 125, 50, 0.3);
-  transition: all 0.25s;
-  font-size: 1.1rem;
+.welcome-card h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--eco-green);
+  margin-bottom: 1rem;
 }
 
-.cta-btn:hover {
-  background: var(--eco-green-dark);
-  transform: scale(1.06);
-  box-shadow: 0 8px 24px rgba(46, 125, 50, 0.4);
+.welcome-card p {
+  font-size: 1.25rem;
+  color: #555;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
 /* ==================== FEATURE CARDS ==================== */
@@ -91,87 +101,87 @@ html {
   background: var(--card-bg);
   border: none;
   border-radius: 20px;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
-  transition: all 0.28s ease;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
   height: 100%;
+  padding: 32px 24px;
+  text-align: center;
 }
 
 .feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 16px 40px rgba(46, 125, 50, 0.18);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 45px rgba(46, 125, 50, 0.2);
 }
 
 .icon-circle {
-  width: 68px;
-  height: 68px;
+  width: 72px;
+  height: 72px;
   background: #e8f5e9;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.9rem;
+  margin: 0 auto 20px;
+  font-size: 2.2rem;
   color: var(--eco-green);
-  margin: 0 auto 1.25rem;
 }
 
-/* ==================== LAYOUT - MAIN CONTENT & SIDEBAR ==================== */
-.main-content {
-  transition: margin-left 0.3s ease;
-  padding: 20px 15px;
+/* ==================== BUTTONS ==================== */
+.cta-btn {
+  background: var(--eco-green);
+  border: none;
+  font-weight: 600;
+  padding: 14px 40px;
+  border-radius: 50px;
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+  transition: all 0.25s;
+  font-size: 1.1rem;
+}
+
+.cta-btn:hover {
+  background: var(--eco-green-dark);
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(46, 125, 50, 0.35);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .welcome-card {
+    padding: 35px 25px;
+    margin: 0 10px;
+  }
+
+  .welcome-card h1 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .leaf-bg {
+    padding: 80px 0 60px;
+  }
+}
+/* ==================== HOME PAGE SPECIFIC FIXES ==================== */
+.home-page {
   width: 100%;
-  min-height: calc(100vh - 70px);
 }
 
-/* Desktop: Sidebar pushes content */
-@media (min-width: 992px) {
-  .main-content {
-    margin-left: 260px;
-    padding: 30px 40px;
-  }
+.leaf-bg {
+  padding: 100px 0 100px;
+  min-height: auto; /* Removed forced 100vh */
+  background: linear-gradient(135deg, #f8fff8 0%, #e8f5e9 100%);
 }
 
-/* Mobile: Full width, no left margin */
-@media (max-width: 991.98px) {
-  .main-content {
-    margin-left: 0 !important;
-    padding: 15px 12px;
-  }
+/* Make sure welcome card is nicely centered */
+.welcome-card {
+  max-width: 820px;
+  margin: 0 auto 3rem auto;
+  padding: 50px 40px;
 }
 
-/* Center content inside Home page */
+/* Center the entire feature row */
 .row.g-4 {
   max-width: 1200px;
-  margin: 0 auto;
-}
-
-.text-center.pb-5 {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-/* ==================== NAVIGATION ==================== */
-.mobile-nav {
-  font-size: 0.95rem;
-  white-space: nowrap;
-  padding: 8px 10px;
-}
-
-@media (max-width: 992px) {
-  .mobile-nav {
-    font-size: 0.95rem;
-    padding: 6px 8px;
-  }
-}
-
-/* ==================== SCROLLBAR & MISC ==================== */
-.hide-scrollbar {
-  scrollbar-width: none;
-}
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Extra safety for full height */
-.vh-100 {
-  height: 100vh !important;
+  margin-left: auto;
+  margin-right: auto;
 }
