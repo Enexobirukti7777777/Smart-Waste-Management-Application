@@ -1,7 +1,5 @@
-// lib/views/dashboard_view.dart
 import 'package:alpha/constants/routes.dart';
-import 'package:alpha/localization/app_localizations.dart';   // ← Added
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:alpha/localization/app_localizations.dart';   
 import 'package:flutter/material.dart';
 
 class DashboardView extends StatefulWidget {
@@ -12,12 +10,12 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> {
-  bool isAmharic = false; // false = English, true = Amharic
+  bool isAmharic = false; 
  int _currentIndex = 0;       
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
-    final loc = AppLocalizations.of(context);   // ← Added for localization
+    final loc = AppLocalizations.of(context);   
 
     const primaryGreen = Color(0xFF3C8D3E);
 
@@ -27,7 +25,7 @@ class _DashboardViewState extends State<DashboardView> {
         backgroundColor: primaryGreen,
         elevation: 0,
         iconTheme: const IconThemeData(
-    color: Colors.white, // ✅ hamburger becomes white
+    color: Colors.white,
   ),
         title: Text(isAmharic ? "ስማርት ቆሻሻ ሰብሳቢ" : "Smart Waste Collector", 
                    style: const TextStyle(color: Colors.white)),
@@ -92,7 +90,7 @@ class _DashboardViewState extends State<DashboardView> {
           ],
         ),
       ),
-      // Inside your DashboardView build method
+ 
 
 bottomNavigationBar: BottomNavigationBar(
   type: BottomNavigationBarType.fixed,

@@ -1,4 +1,3 @@
-// lib/views/payment_view.dart
 import 'package:flutter/material.dart';
 
 class PaymentView extends StatelessWidget {

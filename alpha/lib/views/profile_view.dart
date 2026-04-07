@@ -1,4 +1,4 @@
-// lib/views/profile_view.dart
+
 // ignore_for_file: unused_element
 
 import 'package:alpha/constants/routes.dart';
@@ -10,7 +10,7 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Put the code here ↓↓↓
+    
     final user = FirebaseAuth.instance.currentUser;
 
     final String displayName = user?.displayName ?? "No Name Set";

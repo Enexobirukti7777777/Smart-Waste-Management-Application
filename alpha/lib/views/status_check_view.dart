@@ -1,4 +1,3 @@
-// lib/views/status_check_view.dart
 import 'package:flutter/material.dart';
 
 class StatusCheckView extends StatelessWidget {
