@@ -1,0 +1,105 @@
+{
+  "notifications": [
+    {
+      "id": 1,
+      "pickupId": 4,
+      "userEmail": "user@example.com",
+      "kg": 0.9,
+      "price": 2.7,
+      "status": "approved",
+      "createdAt": "2026-04-06T20:52:05.458Z",
+      "updatedAt": "2026-04-10T11:22:10.029Z"
+    },
+    {
+      "id": 2,
+      "pickupId": 5,
+      "userEmail": "user@example.com",
+      "kg": 10,
+      "price": 30,
+      "status": "approved",
+      "createdAt": "2026-04-06T20:53:21.552Z",
+      "updatedAt": "2026-04-10T11:22:11.954Z"
+    },
+    {
+      "id": 3,
+      "pickupId": 6,
+      "userEmail": "user@example.com",
+      "kg": 15,
+      "price": 45,
+      "status": "approved",
+      "createdAt": "2026-04-06T20:55:00.807Z",
+      "updatedAt": "2026-04-06T20:56:18.945Z"
+    },
+    {
+      "id": 4,
+      "pickupId": 7,
+      "userEmail": "user@example.com",
+      "kg": 9.8,
+      "price": 29.400000000000002,
+      "status": "approved",
+      "createdAt": "2026-04-06T21:02:47.263Z",
+      "updatedAt": "2026-04-06T21:02:54.922Z"
+    },
+    {
+      "id": 5,
+      "pickupId": 8,
+      "userEmail": "user@example.com",
+      "kg": 5,
+      "price": 15,
+      "status": "approved",
+      "createdAt": "2026-04-06T21:03:33.779Z",
+      "updatedAt": "2026-04-06T21:03:38.331Z"
+    },
+    {
+      "id": 6,
+      "pickupId": 9,
+      "userEmail": "user@example.com",
+      "kg": 9,
+      "price": 27,
+      "status": "approved",
+      "createdAt": "2026-04-06T21:06:46.953Z",
+      "updatedAt": "2026-04-06T21:06:51.709Z"
+    },
+    {
+      "id": 7,
+      "pickupId": 10,
+      "userEmail": "user@example.com",
+      "kg": 22,
+      "price": 66,
+      "status": "approved",
+      "createdAt": "2026-04-06T21:16:06.115Z",
+      "updatedAt": "2026-04-06T21:16:10.771Z"
+    },
+    {
+      "id": 8,
+      "pickupId": 11,
+      "userEmail": "user@example.com",
+      "kg": 44,
+      "price": 132,
+      "status": "approved",
+      "createdAt": "2026-04-06T21:21:29.571Z",
+      "updatedAt": "2026-04-06T21:21:34.711Z"
+    },
+    {
+      "id": 9,
+      "pickupId": 12,
+      "userEmail": "user@example.com",
+      "kg": 8,
+      "price": 24,
+      "status": "approved",
+      "createdAt": "2026-04-06T21:29:45.790Z",
+      "updatedAt": "2026-04-06T21:30:01.041Z"
+    },
+    {
+      "id": 10,
+      "pickupId": 13,
+      "userEmail": "user@example.com",
+      "kg": 6,
+      "price": 18,
+      "status": "approved",
+      "createdAt": "2026-04-06T21:33:11.650Z",
+      "updatedAt": "2026-04-06T21:33:38.597Z"
+    }
+  ],
+  "nextId": 11
+}
