@@ -1,0 +1,63 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "tsion ketema",
+      "email": "tsionketema141@gmail.com",
+      "isVerified": false,
+      "otp": "778840",
+      "otp_expires": 1775473881389
+    },
+    {
+      "id": 2,
+      "name": "tsion ketema",
+      "email": "tsionketema1413@gmail.com",
+      "isVerified": true,
+      "otp": null,
+      "otp_expires": null,
+      "password": "$2a$12$JqSya5ClZus6LislXDBhQuoQ4KudzOzqTRwAK98Gw5YWJ9BNKWfvy",
+      "role": "citizen"
+    },
+    {
+      "id": 3,
+      "name": "tsion ketema",
+      "email": "tsiyonketema7@gmail.com",
+      "isVerified": true,
+      "otp": null,
+      "otp_expires": null,
+      "password": "$2a$12$q076Z69NvUiAlR9F25H5Gek0NkKtG90NfJmr8aukJfr7oSmQA0rze",
+      "role": "citizen"
+    },
+    {
+      "id": 4,
+      "name": "erwef",
+      "email": "feyrozi7.75@gmail.com",
+      "isVerified": true,
+      "otp": null,
+      "otp_expires": null,
+      "password": "$2a$12$a4ldym6u7274htKkHIdtjuRTGeZU8e5FyHjNKFmbygHz5dQECdSqm",
+      "role": "citizen"
+    },
+    {
+      "id": 5,
+      "name": "erwef",
+      "email": "elham.feysell@gmail.com",
+      "isVerified": true,
+      "otp": null,
+      "otp_expires": null,
+      "password": "$2a$12$ARk3fSjwQTNJYjPKdOG/ieUg0dX206x2PU40Nbf.9nCJDSUf8.utO",
+      "role": "citizen"
+    },
+    {
+      "id": 6,
+      "name": "ff",
+      "email": "eluti1st@gmail.com",
+      "isVerified": true,
+      "otp": null,
+      "otp_expires": null,
+      "password": "$2a$12$/08WlD4W7kR3h8OzCyw0Lu1VB8gO5vh29QcQ9zhUW.2NQld2tDDVu",
+      "role": "citizen"
+    }
+  ],
+  "nextId": 7
+}
