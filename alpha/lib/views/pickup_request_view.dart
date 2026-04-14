@@ -1,4 +1,6 @@
+// lib/views/pickup_request_view.dart
 import 'package:alpha/constants/routes.dart';
+import 'package:alpha/services/api_service.dart';
 import 'package:flutter/material.dart';
 
 class PickupRequestView extends StatefulWidget {
@@ -9,62 +11,123 @@ class PickupRequestView extends StatefulWidget {
 }
 
 class _PickupRequestViewState extends State<PickupRequestView> {
-  late bool isRecyclable;
+  bool recyclable = false;
+  bool nonRecyclable = false;
 
-  bool plastic = false;
-  bool metal = false;
-  bool others = false;
+  String? selectedMaterial;
   final _weightController = TextEditingController();
   final _packsController = TextEditingController();
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    isRecyclable = ModalRoute.of(context)?.settings.arguments as bool? ?? true;
-  }
+  bool _isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF3C8D3E);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2FFEE),
+      backgroundColor: const Color(0xFFF8FFF5),
       appBar: AppBar(
         backgroundColor: primaryGreen,
-        title: Text(isRecyclable ? "Recyclable Waste" : "Non-Recyclable Waste"),
+        title: const Text("New Pickup Request"),
+        foregroundColor: Colors.white,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isRecyclable) ...[
-              const Text("Select Type", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              CheckboxListTile(title: const Text("Plastic"), value: plastic, onChanged: (v) => setState(() => plastic = v!)),
-              CheckboxListTile(title: const Text("Metal"), value: metal, onChanged: (v) => setState(() => metal = v!)),
-              CheckboxListTile(title: const Text("Others"), value: others, onChanged: (v) => setState(() => others = v!)),
+            const Text("What waste do you want to dispose?", 
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
 
-              const SizedBox(height: 30),
-              const Text("Weight (kg)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-              TextField(controller: _weightController, keyboardType: TextInputType.number),
-            ] else ...[
-              const Text("Number of Packs", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              TextField(controller: _packsController, keyboardType: TextInputType.number),
+            const SizedBox(height: 20),
+
+            CheckboxListTile(
+              title: const Text("Recyclable Waste"),
+              subtitle: const Text("Plastic, Metal, Paper..."),
+              value: recyclable,
+              activeColor: primaryGreen,
+              onChanged: (val) => setState(() => recyclable = val!),
+            ),
+
+            if (recyclable) ...[
+              const Divider(),
+              const Text("Select Material", style: TextStyle(fontWeight: FontWeight.w600)),
+              RadioListTile(value: "plastic", groupValue: selectedMaterial, title: const Text("Plastic"), onChanged: (v) => setState(() => selectedMaterial = v)),
+              RadioListTile(value: "metal", groupValue: selectedMaterial, title: const Text("Metal"), onChanged: (v) => setState(() => selectedMaterial = v)),
+              RadioListTile(value: "others", groupValue: selectedMaterial, title: const Text("Others"), onChanged: (v) => setState(() => selectedMaterial = v)),
+
+              const SizedBox(height: 20),
+              const Text("Weight (kg)", style: TextStyle(fontWeight: FontWeight.w600)),
+              TextField(controller: _weightController, keyboardType: TextInputType.number, decoration: const InputDecoration(border: OutlineInputBorder())),
             ],
 
-            const Spacer(),
+            const SizedBox(height: 10),
+
+            CheckboxListTile(
+              title: const Text("Non-Recyclable Waste"),
+              subtitle: const Text("General waste, food waste..."),
+              value: nonRecyclable,
+              activeColor: primaryGreen,
+              onChanged: (val) => setState(() => nonRecyclable = val!),
+            ),
+
+            if (nonRecyclable) ...[
+              const Divider(),
+              const Text("Number of Packs", style: TextStyle(fontWeight: FontWeight.w600)),
+              TextField(controller: _packsController, keyboardType: TextInputType.number, decoration: const InputDecoration(border: OutlineInputBorder())),
+            ],
+
+            const SizedBox(height: 50),
 
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, statusCheckRoute),
+              onPressed: _isSubmitting ? null : _submitToBackend,
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryGreen,
-                minimumSize: const Size(double.infinity, 56),
+                minimumSize: const Size(double.infinity, 58),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              child: const Text("Submit"),
+              child: _isSubmitting
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Submit Request", style: TextStyle(fontSize: 18)),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _submitToBackend() async {
+    if (!recyclable && !nonRecyclable) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select at least one type")));
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      double kg = 0;
+
+      if (recyclable && _weightController.text.isNotEmpty) {
+        kg = double.tryParse(_weightController.text) ?? 0;
+      } else if (nonRecyclable && _packsController.text.isNotEmpty) {
+        kg = (double.tryParse(_packsController.text) ?? 0) * 2; // Example logic
+      }
+
+      final result = await ApiService().submitPickup(
+        kg: kg,
+        userEmail: "current_user@example.com",   // TODO: Replace with real logged-in user email later
+      );
+
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("✅ Request submitted successfully!")));
+        Navigator.pushNamed(context, statusCheckRoute);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['message'] ?? 'Failed')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Connection error")));
+    } finally {
+      setState(() => _isSubmitting = false);
+    }
   }
 }

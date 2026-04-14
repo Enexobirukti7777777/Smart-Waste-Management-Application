@@ -1,5 +1,6 @@
+// lib/views/login_view.dart
 import 'package:alpha/constants/routes.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:alpha/services/api_service.dart';
 import 'package:flutter/material.dart';
 
 class LoginView extends StatefulWidget {
@@ -12,6 +13,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -25,24 +27,33 @@ class _LoginViewState extends State<LoginView> {
   Future<void> _login() async {
     setState(() => _isLoading = true);
 
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email and Password are required")),
       );
+      setState(() => _isLoading = false);
+      return;
+    }
 
-      if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+    try {
+      final result = await ApiService().login(email, password);
+
+      if (result['success'] == true || result['accessToken'] != null) {
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(context, dashboardRoute, (_) => false);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Login failed')),
+        );
       }
-    } on FirebaseAuthException catch (e) {
-      String message = 'An error occurred';
-      if (e.code == 'user-not-found') message = 'No user found with this email';
-      if (e.code == 'wrong-password') message = 'Wrong password';
-      if (e.code == 'invalid-email') message = 'Invalid email address';
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Something went wrong")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cannot connect to server")),
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -61,41 +72,16 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             children: [
               const SizedBox(height: 30),
-
-              // Logo
-              Center(
-                child: Image.asset('assets/images/logo.png', height: 100),
-              ),
-
+              Center(child: Image.asset('assets/images/logo.png', height: 100)),
               const SizedBox(height: 20),
-              const Text(
-                "Smart Waste Collector",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primaryGreen),
-              ),
+              const Text("Smart Waste Collector",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: primaryGreen)),
 
               const SizedBox(height: 60),
 
               _buildTextField(_emailController, "Enter your email", Icons.email_outlined),
               const SizedBox(height: 20),
               _buildPasswordField(),
-
-              const SizedBox(height: 12),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(value: false, onChanged: (v) {}),
-                      const Text("Save password"),
-                    ],
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text("Forgot Password?", style: TextStyle(color: primaryGreen)),
-                  ),
-                ],
-              ),
 
               const SizedBox(height: 40),
 
@@ -112,13 +98,10 @@ class _LoginViewState extends State<LoginView> {
               ),
 
               const SizedBox(height: 30),
-
               TextButton(
-                onPressed: () => Navigator.of(context).pushNamed(registerRoute),
-                child: const Text(
-                  "Don't have an account? Register Now",
-                  style: TextStyle(color: primaryGreen, fontWeight: FontWeight.w600),
-                ),
+                onPressed: () => Navigator.pushNamed(context, registerRoute),
+                child: const Text("Don't have an account? Register Now",
+                    style: TextStyle(color: primaryGreen, fontWeight: FontWeight.w600)),
               ),
             ],
           ),
@@ -136,10 +119,7 @@ class _LoginViewState extends State<LoginView> {
         prefixIcon: Icon(icon, color: Colors.green.shade700),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       ),
     );
   }
@@ -157,10 +137,7 @@ class _LoginViewState extends State<LoginView> {
         ),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       ),
     );
   }

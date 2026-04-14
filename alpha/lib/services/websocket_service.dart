@@ -5,6 +5,7 @@ class WebSocketService {
   WebSocketChannel? _channel;
   final Function(LatLng) onLocationUpdate;
 
+
   WebSocketService({required this.onLocationUpdate});
 
   void connect() {

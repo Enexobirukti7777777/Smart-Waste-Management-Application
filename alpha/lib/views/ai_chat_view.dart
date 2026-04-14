@@ -34,6 +34,7 @@ class _AiChatViewState extends State<AiChatView> {
         title: const Text("AI Chat"),
         foregroundColor: Colors.white,
       ),
+
       body: Column(
         children: [
           Expanded(

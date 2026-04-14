@@ -3,6 +3,7 @@ import 'package:alpha/constants/routes.dart';
 import 'package:alpha/firebase_options.dart';
 import 'package:alpha/localization/app_localizations.dart';
 import 'package:alpha/views/ai_chat_view.dart';
+import 'package:alpha/views/company_register_view.dart';
 import 'package:alpha/views/dashboard_view.dart';
 import 'package:alpha/views/login_view.dart';
 import 'package:alpha/views/my_requests_view.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Smart Waste Collector',
+      title: 'kuralewo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3C8D3E)),
@@ -64,10 +65,11 @@ class MyApp extends StatelessWidget {
         paymentRoute: (context) => const PaymentView(),
         myRequestsRoute: (context) => const MyRequestsView(),
         pickupTypeSelectionRoute: (context) => const PickupTypeSelectionView(),
+        companyRegisterRoute: (context) => const CompanyRegisterView(),
 
       },
     );
-  }
+  } 
 }
 
 class HomePage extends StatelessWidget {
@@ -75,11 +77,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;   // We still use this to check login
 
-    if (user != null) {
-      return const DashboardView();   
+    if (user == null) {
+      return const RoleSelectionView();   // Always show role selection if not logged in
     }
-    return const RoleSelectionView();
+
+    return const DashboardView();   // Logged in user goes to Dashboard
   }
 }

@@ -1,7 +1,7 @@
 import 'package:alpha/constants/routes.dart';
 import 'package:alpha/localization/app_localizations.dart';   
 import 'package:flutter/material.dart';
-
+import 'package:carousel_slider/carousel_slider.dart';
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
 
@@ -12,6 +12,58 @@ class DashboardView extends StatefulWidget {
 class _DashboardViewState extends State<DashboardView> {
   bool isAmharic = false; 
  int _currentIndex = 0;       
+ Widget _buildCarouselItem({
+  required String image,
+  required String title,
+  required String subtitle,
+}) {
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 4),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20),
+      image: DecorationImage(
+        image: AssetImage(image),
+        fit: BoxFit.cover,
+      ),
+    ),
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            Colors.black.withOpacity(0.7),
+          ],
+        ),
+      ),
+      alignment: Alignment.bottomLeft,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
@@ -27,9 +79,13 @@ class _DashboardViewState extends State<DashboardView> {
         iconTheme: const IconThemeData(
     color: Colors.white,
   ),
-        title: Text(isAmharic ? "ስማርት ቆሻሻ ሰብሳቢ" : "Smart Waste Collector", 
+        title: Text(isAmharic ? "ስማርት ቆሻሻ ሰብሳቢ" : "Smart Waste ", 
                    style: const TextStyle(color: Colors.white)),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () => _showNotifications(context),
+          ),
           // Language Switcher
           TextButton(
             onPressed: () {
@@ -47,6 +103,7 @@ class _DashboardViewState extends State<DashboardView> {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
+          
         ],
       ),
       drawer: _buildDrawer(),
@@ -55,16 +112,45 @@ class _DashboardViewState extends State<DashboardView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 180,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/waste_header.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            CarouselSlider(
+  options: CarouselOptions(
+    height: 170,
+autoPlay: true,
+autoPlayInterval: const Duration(seconds: 6),
+  autoPlayCurve: Curves.easeInOutCubic,
+
+autoPlayAnimationDuration: const Duration(milliseconds: 4000),
+enlargeCenterPage: true,
+enlargeStrategy: CenterPageEnlargeStrategy.height,
+viewportFraction: 0.85,
+aspectRatio: 16 / 9,
+enableInfiniteScroll: true,
+scrollDirection: Axis.horizontal,
+pauseAutoPlayOnTouch: true,
+  ),
+  items: [
+    // Slide 1 - Current header
+    _buildCarouselItem(
+      image: 'assets/images/waste_header.png',
+      title: 'Smart Waste Management',
+      subtitle: 'Together for a cleaner city',
+    ),
+    
+    // Slide 2 - Add more promotional slides
+    _buildCarouselItem(
+      image: 'assets/images/boy.jpg', // Add this image
+      title: 'Need Extra Pickup?',
+      subtitle: 'Book now ',
+    ),
+    
+    // Slide 3
+    _buildCarouselItem(
+      image: 'assets/images/ai.webp',
+      title: 'Ask AI Assistant',
+      subtitle: 'Ask anything',
+    ),
+  ],
+),
             const SizedBox(height: 30),
             Text(
               isAmharic ? "አገልግሎቶች" : "Services",
@@ -75,7 +161,7 @@ class _DashboardViewState extends State<DashboardView> {
             _buildServiceCard(
               isAmharic ? "ተጨማሪ ቆሻሻ መሰብሰቢያ" : "Extra Pickup Request",
               Icons.local_shipping,
-              () => Navigator.pushNamed(context, pickupTypeSelectionRoute),
+              () => Navigator.pushNamed(context, pickupRequestRoute),
             ),
             _buildServiceCard(
               isAmharic ? "ኤአይ ቻት" : "AI Chat",
@@ -148,7 +234,7 @@ bottomNavigationBar: BottomNavigationBar(
   Widget _buildDrawer() {
     return Drawer(
       
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFF3C8D3E),
       child: Column(
         children: [
           // Inside _buildDrawer()
@@ -156,20 +242,21 @@ Container(
   
           padding: const EdgeInsets.only(top: 60, bottom: 30),
           width: double.infinity,
-          color: const Color(0xFF3C8D3E),
+          color: const Color.fromARGB(255, 255, 255, 255),
           child: Column(
             children: [
               Image.asset(
                 'assets/images/logo.png',
                 height: 80,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 1),
               const Text(
-                "Smart Waste Collector",
+                "kuralewo",
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
+                  color: Color(0xFF3C8D3E),
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
+                  
                 ),
               ),
             ],
@@ -178,28 +265,28 @@ Container(
           const SizedBox(height: 20),
 
 ListTile(
-  leading: const Icon(Icons.person_outline, color: Color(0xFF3C8D3E)),
-  title: const Text("Profile", style: TextStyle(color: Color(0xFF3C8D3E), fontWeight: FontWeight.w600)),
+  leading: const Icon(Icons.person_outline, color: Color.fromARGB(255, 252, 252, 252)),
+  title: const Text("Profile", style: TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.w600)),
   onTap: () {
     Navigator.pop(context);
     Navigator.pushNamed(context, profileRoute);
   },
 ),         
 ListTile(
-  leading: const Icon(Icons.history, color: Color(0xFF3C8D3E)),
-  title: const Text("My Requests", style: TextStyle(color: Color(0xFF3C8D3E) ,fontWeight: FontWeight.w600)),
+  leading: const Icon(Icons.history, color: Color.fromARGB(255, 255, 255, 255)),
+  title: const Text("My Requests", style: TextStyle(color: Color.fromARGB(255, 255, 255, 255) ,fontWeight: FontWeight.w600)),
   onTap: () {
     Navigator.pop(context);
     Navigator.pushNamed(context, myRequestsRoute);
   },
-),          ListTile(leading: const Icon(Icons.payment, color: Color(0xFF3C8D3E)), title: const Text("Payment & Wallet", style: TextStyle(color: Color(0xFF3C8D3E), fontWeight: FontWeight.w600)), onTap: () {
+),          ListTile(leading: const Icon(Icons.payment, color: Color.fromARGB(255, 255, 255, 255)), title: const Text("Payment & Wallet", style: TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.w600)), onTap: () {
             Navigator.pop(context);
             Navigator.pushNamed(context, paymentRoute);
           }),
-          ListTile(leading: const Icon(Icons.language, color: Color(0xFF3C8D3E)), title: const Text("Language", style: TextStyle(color: Color(0xFF3C8D3E), fontWeight: FontWeight.w600)), onTap: () => Navigator.pop(context)),
+          ListTile(leading: const Icon(Icons.language, color: Color.fromARGB(255, 255, 255, 255)), title: const Text("Language", style: TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.w600)), onTap: () => Navigator.pop(context)),
 ListTile(
-  leading: const Icon(Icons.star_outline, color: Color(0xFF3C8D3E)),
-  title: const Text("Rate This App", style: TextStyle(color: Color(0xFF3C8D3E) , fontWeight: FontWeight.w600)),
+  leading: const Icon(Icons.star_outline, color: Color.fromARGB(255, 255, 255, 255)),
+  title: const Text("Rate This App", style: TextStyle(color: Color.fromARGB(255, 255, 255, 255) , fontWeight: FontWeight.w600)),
   onTap: () {
     showRateAppDialog(context);
   },
@@ -241,6 +328,31 @@ ListTile(
       ),
     );
   }
+}void _showNotifications(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text(
+              "Notifications",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            ListTile(
+              leading: Icon(Icons.notifications),
+              title: Text("New message received"),
+              subtitle: Text("2 minutes ago"),
+            ),
+            // Add more notifications here...
+          ],
+        ),
+      );
+    },
+  );
 }
 void showRateAppDialog(BuildContext context) {
   int rating = 0;

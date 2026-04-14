@@ -32,14 +32,13 @@ class _CompanyRegisterViewState extends State<CompanyRegisterView> {
   }
 
   try {
-    final result = await ApiService().register(
-      name: _companyNameController.text.trim(),
+    final result = await ApiService().registerCompany(
+      companyName: _companyNameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
-      confirmPassword: _confirmPasswordController.text.trim(),   // ← Add this line
-      phone: _phoneController.text.trim(),
-    );
-
+     // confirmPassword: _confirmPasswordController.text.trim(),
+      //phone: _phoneController.text.trim(),
+);
     if (result['accessToken'] != null) {
       Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (_) => false);
     } else {
