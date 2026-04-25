@@ -1,6 +1,6 @@
-import 'package:collector_app/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'home_view.dart';
+import '../services/api_service.dart';
+import 'collector_home_view.dart';
 
 class CollectorLoginView extends StatefulWidget {
   const CollectorLoginView({super.key});
@@ -27,7 +27,7 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
         context,
         MaterialPageRoute(
           builder: (_) => CollectorHomeView(
-            userEmail: result['user']['email'],
+            userEmail: result['user']['email'] ?? _emailController.text.trim(),
             userName: result['user']['name'] ?? "Collector",
           ),
         ),
@@ -45,19 +45,37 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.person_pin, size: 100, color: Colors.green),
-            const Text("Collector Login", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+            const Icon(Icons.person_pin_circle, size: 120, color: Colors.green),
+            const SizedBox(height: 20),
+            const Text(
+              "Collector Login",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 40),
-            TextField(controller: _emailController, decoration: const InputDecoration(labelText: "Email")),
-            TextField(controller: _passwordController, obscureText: true, decoration: const InputDecoration(labelText: "Password")),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
+            ),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _isLoading ? null : _login,
-              child: _isLoading ? const CircularProgressIndicator() : const Text("Login as Collector"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 56),
+                backgroundColor: Colors.green,
+              ),
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Login as Collector", style: TextStyle(fontSize: 18)),
             ),
           ],
         ),
