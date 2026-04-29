@@ -1,5 +1,7 @@
+// lib/collector_views/collector_login_view.dart
+import 'package:collector_app/constants/routes.dart';
+import 'package:collector_app/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'collector_home_view.dart';
 
 class CollectorLoginView extends StatefulWidget {
   const CollectorLoginView({super.key});
@@ -29,64 +31,51 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
       return;
     }
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      // TODO: Use collector specific login endpoint later
+      final result = await ApiService().login(email, password);
 
-    if (mounted) {
+      if (result['success'] == true) {
+        Navigator.pushNamedAndRemoveUntil(context, collectorDashboardRoute, (_) => false);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Login failed')),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("✅ Login Successful"), backgroundColor: Colors.green),
+        const SnackBar(content: Text("Cannot connect to server")),
       );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CollectorHomeView(
-            userEmail: email,
-            userName: email.split('@').first,
-          ),
-        ),
-      );
+    } finally {
+      setState(() => _isLoading = false);
     }
-
-    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF3C8D3E);
-    const bgColor = Color(0xFFF2FFEE);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: const Color(0xFFF2FFEE),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
           child: Column(
             children: [
-              const SizedBox(height: 30),
-
-              // Logo with fallback
+              const SizedBox(height: 40),
               Center(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  height: 100,
-                  
-                  
-                ),
+                child: Image.asset('assets/images/logo.png', height: 120),
               ),
-
               const SizedBox(height: 20),
               const Text(
                 "Collector Portal",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: primaryGreen),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryGreen),
               ),
-              const Text(
-                "Sign in to manage pickups",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
+              const Text("Smart Waste Collector", style: TextStyle(fontSize: 16, color: Colors.grey)),
 
               const SizedBox(height: 60),
 
-              _buildTextField(_emailController, "Enter your email", Icons.email_outlined),
+              _buildTextField(_emailController, "Email Address", Icons.email),
               const SizedBox(height: 20),
               _buildPasswordField(),
 
@@ -97,7 +86,7 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryGreen,
                   minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
@@ -106,15 +95,8 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
 
               const SizedBox(height: 30),
               TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Collector registration coming soon")),
-                  );
-                },
-                child: const Text(
-                  "Don't have a collector account? Contact Admin",
-                  style: TextStyle(color: primaryGreen, fontWeight: FontWeight.w600),
-                ),
+                onPressed: () {},
+                child: const Text("Forgot Password?", style: TextStyle(color: primaryGreen)),
               ),
             ],
           ),
@@ -126,13 +108,12 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
   Widget _buildTextField(TextEditingController controller, String hint, IconData icon) {
     return TextField(
       controller: controller,
-      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: Icon(icon, color: Colors.green.shade700),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -142,7 +123,7 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
       controller: _passwordController,
       obscureText: _obscurePassword,
       decoration: InputDecoration(
-        hintText: "Enter your password",
+        hintText: "Password",
         prefixIcon: const Icon(Icons.lock_outline, color: Colors.green),
         suffixIcon: IconButton(
           icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
@@ -150,7 +131,7 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
         ),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
