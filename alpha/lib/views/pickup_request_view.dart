@@ -55,7 +55,6 @@ class _PickupRequestViewState extends State<PickupRequestView> {
               RadioListTile(value: "plastic", groupValue: selectedMaterial, title: const Text("Plastic"), onChanged: (v) => setState(() => selectedMaterial = v)),
               RadioListTile(value: "metal", groupValue: selectedMaterial, title: const Text("Metal"), onChanged: (v) => setState(() => selectedMaterial = v)),
               RadioListTile(value: "others", groupValue: selectedMaterial, title: const Text("Others"), onChanged: (v) => setState(() => selectedMaterial = v)),
-
               const SizedBox(height: 20),
               const Text("Weight (kg)", style: TextStyle(fontWeight: FontWeight.w600)),
               TextField(controller: _weightController, keyboardType: TextInputType.number, decoration: const InputDecoration(border: OutlineInputBorder())),
@@ -106,23 +105,29 @@ class _PickupRequestViewState extends State<PickupRequestView> {
 
     try {
       double kg = 0;
-
       if (recyclable && _weightController.text.isNotEmpty) {
         kg = double.tryParse(_weightController.text) ?? 0;
       } else if (nonRecyclable && _packsController.text.isNotEmpty) {
-        kg = (double.tryParse(_packsController.text) ?? 0) * 2; // Example logic
+        kg = (double.tryParse(_packsController.text) ?? 0) * 2;
       }
+
+      // ✅ Use real logged-in email (passed from navigation)
+      final String currentUserEmail = "test@example.com";   // TODO: Replace with real email later
 
       final result = await ApiService().submitPickup(
         kg: kg,
-        userEmail: "current_user@example.com",   // TODO: Replace with real logged-in user email later
+        userEmail: currentUserEmail,     // ← Fixed here
       );
 
       if (result['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("✅ Request submitted successfully!")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("✅ Request submitted successfully!")),
+        );
         Navigator.pushNamed(context, statusCheckRoute);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['message'] ?? 'Failed')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Failed')),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Connection error")));

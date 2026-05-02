@@ -1,49 +1,73 @@
-//import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// lib/services/notification_service.dart
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-// class NotificationService {
-//   static final NotificationService _instance = NotificationService._internal();
-//   factory NotificationService() => _instance;
-//   NotificationService._internal();
+class NotificationService {
+  static final NotificationService _instance = NotificationService._internal();
+  factory NotificationService() => _instance;
+  NotificationService._internal();
 
-//   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-//   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  late IO.Socket socket;
+  List<dynamic> notifications = [];
+  int unreadCount = 0;
+  String? userEmail;
 
-//   Future<void> initialize() async {
-//     // Request permission
-//     await _fcm.requestPermission();
+  final String baseUrl = "http://192.168.1.11:5000";   
 
-//     // Local notification setup
-//     const AndroidInitializationSettings android = AndroidInitializationSettings('@mipmap/ic_launcher');
-//     const InitializationSettings initSettings = InitializationSettings(android: android);
+  // Initialize Socket
+  void init(String email) {
+    userEmail = email;
+    _connectSocket();
+  }
 
-//     await _localNotifications.initialize(initSettings);
-//   }
+  void _connectSocket() {
+    socket = IO.io(baseUrl, <String, dynamic>{
+      "transports": ["websocket"],
+      "autoConnect": true,
+    });
 
-//   // Show popup notification 
-//   Future<void> showNotification({
-//     required String title,
-//     required String body,
-//   }) async {
-//     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-//       'main_channel',
-//       'Main Notifications',
-//       importance: Importance.high,
-//       priority: Priority.high,
-//     );
+    socket.onConnect((_) {
+      print("✅ Socket Connected");
+      if (userEmail != null) socket.emit("join-user", userEmail);
+    });
 
-//     const NotificationDetails details = NotificationDetails(android: androidDetails);
+    socket.on("price-notification", (data) {
+      notifications.insert(0, data);
+      unreadCount++;
+      print("🔔 New Notification Received");
+    });
 
-//     await _localNotifications.show(0, title, body, details);
-//   }
+    socket.onDisconnect((_) => print("🔴 Socket Disconnected"));
+  }
 
-//   // For future backend integration
-//   void setupFirebaseListeners() {
-//     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//       showNotification(
-//         title: message.notification?.title ?? "Smart Waste",
-//         body: message.notification?.body ?? "You have a new update",
-//       );
-//     });
-//   }
-// }
+  // Fetch notifications from backend
+  Future<List<dynamic>> fetchNotifications() async {
+    if (userEmail == null) return [];
+
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/api/notifications?userEmail=$userEmail"),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        notifications = data['notifications'] ?? [];
+        unreadCount = notifications.length;
+        return notifications;
+      }
+    } catch (e) {
+      print("❌ Error fetching notifications: $e");
+    }
+    return [];
+  }
+
+  // Clear unread count when user opens notifications
+  void markAsRead() {
+    unreadCount = 0;
+  }
+
+  void dispose() {
+    socket.disconnect();
+  }
+}

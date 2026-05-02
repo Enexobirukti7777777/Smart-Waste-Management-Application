@@ -14,34 +14,35 @@ class _RoleSelectionViewState extends State<RoleSelectionView> {
   bool isHomeSelected = true;
 
   // Save role to backend
-   Future<void> _selectRole(String role) async {
-    setState(() => isHomeSelected = role == "Home");
+  Future<void> _selectRole(String role) async {
+  setState(() => isHomeSelected = role == "Home");
 
-    try {
-      final result = await ApiService().saveUserType(role);
+  try {
+    final result = await ApiService().saveUserType(role);
 
-      if (!mounted) return;   // Important: prevent error
+    print("RESULT: $result");
 
-      if (result['message']?.toLowerCase().contains('saved') == true || 
-          result['success'] == true) {
-        
-        if (role == "Home") {
-          Navigator.of(context).pushNamed(registerRoute);
-        } else {
-          Navigator.of(context).pushNamed(companyRegisterRoute);
-        }
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      if (role == "Home") {
+        Navigator.of(context).pushReplacementNamed(loginRoute);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Failed to save role')),
-        );
+        Navigator.of(context).pushReplacementNamed(companyRegisterRoute);
       }
-    } catch (e) {
-      if (!mounted) return;
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cannot connect to server")),
+        SnackBar(content: Text(result['message'] ?? 'Failed')),
       );
     }
+  } catch (e) {
+    print("ERROR: $e");
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Cannot connect to server")),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {

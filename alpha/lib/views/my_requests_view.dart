@@ -4,7 +4,9 @@ import 'package:alpha/services/api_service.dart';
 import 'package:flutter/material.dart';
 
 class MyRequestsView extends StatefulWidget {
-  const MyRequestsView({super.key});
+  final String userEmail;
+
+const MyRequestsView({super.key, required this.userEmail});
 
   @override
   State<MyRequestsView> createState() => _MyRequestsViewState();
@@ -15,29 +17,34 @@ class _MyRequestsViewState extends State<MyRequestsView> {
   bool isLoading = true;
   String errorMessage = '';
 
+  // Use real email or fallback
+String get userEmail => widget.userEmail;
   @override
   void initState() {
     super.initState();
-    _fetchPickups();
+    _fetchMyRequests();
   }
 
-  Future<void> _fetchPickups() async {
-    setState(() => isLoading = true);
+  Future<void> _fetchMyRequests() async {
+  setState(() => isLoading = true);
+  
+  print("🔄 Fetching MY REQUESTS for: $userEmail");
 
-    try {
-      final data = await ApiService().getMyPickups();
-      setState(() {
-        requests = data;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        errorMessage = "Failed to load requests";
-        isLoading = false;
-      });
-    }
+  try {
+    final data = await ApiService().getMyPickups(userEmail);
+    
+    print("✅ Got ${data.length} requests");
+    print("Requests data: $data");
+
+    setState(() {
+      requests = data;
+      isLoading = false;
+    });
+  } catch (e) {
+    print("❌ Error: $e");
+    setState(() => isLoading = false);
   }
-
+}
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF3C8D3E);
@@ -51,7 +58,7 @@ class _MyRequestsViewState extends State<MyRequestsView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _fetchPickups,
+            onPressed: _fetchMyRequests,
           ),
         ],
       ),
@@ -60,14 +67,19 @@ class _MyRequestsViewState extends State<MyRequestsView> {
           : errorMessage.isNotEmpty
               ? Center(child: Text(errorMessage))
               : requests.isEmpty
-                  ? const Center(child: Text("No pickup requests yet"))
+                  ? const Center(
+                      child: Text(
+                        "No pickup requests yet\nTap + to create new",
+                        textAlign: TextAlign.center,
+                      ),
+                    )
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: requests.length,
                       itemBuilder: (context, index) {
                         final req = requests[index];
 
-                        final status = req['status']?.toString().toLowerCase() ?? 'pending';
+                        final status = (req['status'] ?? 'pending').toString().toLowerCase();
                         final isApproved = status == 'approved' || status == 'completed';
 
                         return Card(
@@ -91,7 +103,7 @@ class _MyRequestsViewState extends State<MyRequestsView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        req['id']?.toString() ?? 'No ID',
+                                        "#${req['id'] ?? 'N/A'}",
                                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                       ),
                                       const SizedBox(height: 4),
@@ -100,7 +112,7 @@ class _MyRequestsViewState extends State<MyRequestsView> {
                                         style: TextStyle(color: Colors.grey[600]),
                                       ),
                                       Text(
-                                        "${req['type'] ?? 'Waste'} • ${req['weight'] ?? 'N/A'} kg",
+                                        "${req['kg'] ?? req['weight'] ?? 'N/A'} kg",
                                         style: const TextStyle(fontSize: 15),
                                       ),
                                     ],
