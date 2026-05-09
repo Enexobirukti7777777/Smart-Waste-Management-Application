@@ -3,27 +3,37 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
+  static const String baseUrl = "http://192.168.1.11:5000"; // ← Update if IP changes
 
-static const String baseUrl = "http://192.168.1.11:5000"; // Real device
-
+  // ==================== SEND OTP ====================
   Future<Map<String, dynamic>> sendOtp({
     required String name,
     required String email,
   }) async {
     try {
+      print("🔄 Sending OTP to: $email");
+      print("🌐 URL: $baseUrl/api/auth/send-otp");
+
       final response = await http.post(
         Uri.parse("$baseUrl/api/auth/send-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"name": name, "email": email}),
       );
 
-      print("Send OTP Status: ${response.statusCode}"); // For debugging
+      print("📡 Status Code: ${response.statusCode}");
+      print("📦 Response: ${response.body}");
+
       return jsonDecode(response.body);
     } catch (e) {
-      print("Connection Error: $e");
-      return {"success": false, "message": "Cannot connect to server. Backend not running or wrong IP."};
+      print("❌ Connection Error: $e");
+      return {
+        "success": false,
+        "message": "Cannot connect to server.\nCheck:\n1. Backend running?\n2. Correct IP?\n3. Same WiFi?"
+      };
     }
   }
+
+  // ==================== VERIFY OTP & REGISTER ====================
   Future<Map<String, dynamic>> verifyOtpAndRegister({
     required String email,
     required String otp,
@@ -45,48 +55,33 @@ static const String baseUrl = "http://192.168.1.11:5000"; // Real device
     }
   }
 
+  // ==================== REGISTER COMPANY (with OTP) ====================
   Future<Map<String, dynamic>> registerCompany({
-  required String companyName,
-  required String email,
-  required String password,
-}) async {
-  try {
-    // Step 1: Send OTP
-    final otpResponse = await http.post(
-      Uri.parse("$baseUrl/api/auth/send-otp"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "name": companyName,
-        "email": email,
-      }),
-    );
+    required String companyName,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final otpResponse = await sendOtp(name: companyName, email: email);
+      
+      if (otpResponse["success"] != true) {
+        return otpResponse;
+      }
 
-    final otpData = jsonDecode(otpResponse.body);
+      // For testing - change later to real OTP from user input
+      const String otp = "123456";
 
-    if (otpData["success"] != true) {
-      return otpData;
+      return await verifyOtpAndRegister(
+        email: email,
+        otp: otp,
+        password: password,
+      );
+    } catch (e) {
+      return {"success": false, "message": "Registration failed"};
     }
-
-    // ⚠️ For now (testing), use OTP from backend console
-    String otp = "123456"; // replace with real OTP printed in backend
-
-    // Step 2: Verify OTP + register
-    final verifyResponse = await http.post(
-      Uri.parse("$baseUrl/api/auth/verify-otp"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "email": email,
-        "otp": otp,
-        "password": password,
-      }),
-    );
-
-    return jsonDecode(verifyResponse.body);
-  } catch (e) {
-    return {"success": false, "message": "Cannot connect to server"};
   }
-}
 
+  // ==================== LOGIN ====================
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await http.post(
@@ -100,11 +95,11 @@ static const String baseUrl = "http://192.168.1.11:5000"; // Real device
     }
   }
 
-  // === Save Role ===
+  // ==================== SAVE USER ROLE ====================
   Future<Map<String, dynamic>> saveUserType(String userType) async {
     try {
       final response = await http.post(
-        Uri.parse("$baseUrl/api/onboard"),
+        Uri.parse("$baseUrl/api/onboard"),   // Updated endpoint
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"userType": userType}),
       );
@@ -113,30 +108,29 @@ static const String baseUrl = "http://192.168.1.11:5000"; // Real device
       return {"success": false, "message": "Cannot connect to server"};
     }
   }
-  // Add this inside ApiService class
-// Add this inside ApiService class
 
-  // ===================== FETCH MY PICKUPS =====================
-  Future<List<dynamic>> getMyPickups() async {
-    try {
-      final response = await http.get(
-        Uri.parse("$baseUrl/api/requests"),
-        headers: {"Content-Type": "application/json"},
-      );
+  // ==================== OTHER METHODS ====================
+  Future<List<dynamic>> getMyPickups(String userEmail) async {
+  try {
+    final response = await http.get(
+      Uri.parse("$baseUrl/api/requests?userEmail=$userEmail"),
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['requests'] ?? data; // Adjust based on your backend response
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print("Error fetching pickups: $e");
+    print("My Requests API Status: ${response.statusCode}"); // ← Add this
+    print("Response Body: ${response.body}");               // ← Add this
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['requests'] ?? data ?? [];
+    } else {
       return [];
     }
+  } catch (e) {
+    print("Error fetching my pickups: $e");
+    return [];
   }
+}
 
-  // ===================== SUBMIT PICKUP =====================
   Future<Map<String, dynamic>> submitPickup({
     required double kg,
     required String userEmail,
@@ -145,17 +139,34 @@ static const String baseUrl = "http://192.168.1.11:5000"; // Real device
       final response = await http.post(
         Uri.parse("$baseUrl/api/requests"),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "kg": kg,
-          "userEmail": userEmail,
-        }),
+        body: jsonEncode({"kg": kg, "userEmail": userEmail}),
       );
-
-      print("Submit Status: ${response.statusCode}");
       return jsonDecode(response.body);
     } catch (e) {
       print("Submit Error: $e");
       return {"success": false, "message": "Cannot connect to server"};
     }
   }
+
+  Future<List<dynamic>> getNotifications(String userEmail) async {
+  try {
+    final response = await http.get(
+      Uri.parse("$baseUrl/api/notifications?userEmail=$userEmail"),
+    );
+
+    print("Notifications API Status: ${response.statusCode}");
+    print("Notifications Body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['notifications'] ?? [];
+    } else {
+      return [];
+    }
+  } catch (e) {
+    print("Error fetching notifications: $e");
+    return [];
+  }
+}
+
 }

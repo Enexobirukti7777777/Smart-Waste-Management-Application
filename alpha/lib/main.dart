@@ -11,6 +11,7 @@ import 'package:alpha/views/payment_view.dart';
 import 'package:alpha/views/pickup_request_view.dart';
 import 'package:alpha/views/pickup_type_selection_view.dart';
 import 'package:alpha/views/profile_view.dart';
+// ignore: unused_import
 import 'package:alpha/views/register_view.dart';
 import 'package:alpha/views/role_selection_view.dart';
 import 'package:alpha/views/status_check_view.dart';
@@ -55,16 +56,20 @@ class MyApp extends StatelessWidget {
       routes: {
         roleSelectionRoute: (context) => const RoleSelectionView(),
         loginRoute: (context) => const LoginView(),
-        registerRoute: (context) => const RegisterView(),
-        dashboardRoute: (context) => const DashboardView(),
+                dashboardRoute: (context) {
+  final email = ModalRoute.of(context)!.settings.arguments as String;
+  return DashboardView(userEmail: email);
+},
         profileRoute: (context) => const ProfileView(),
         trackCollectorRoute: (context) => const TrackCollectorView(),
         pickupRequestRoute: (context) => const PickupRequestView(),
         aiChatRoute: (context) => const AiChatView(),
         statusCheckRoute: (context) => const StatusCheckView(),
         paymentRoute: (context) => const PaymentView(),
-        myRequestsRoute: (context) => const MyRequestsView(),
-        pickupTypeSelectionRoute: (context) => const PickupTypeSelectionView(),
+myRequestsRoute: (context) {
+  final email = ModalRoute.of(context)!.settings.arguments as String;
+  return MyRequestsView(userEmail: email);
+},        pickupTypeSelectionRoute: (context) => const PickupTypeSelectionView(),
         companyRegisterRoute: (context) => const CompanyRegisterView(),
 
       },
@@ -77,12 +82,18 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;   // We still use this to check login
+    final user = FirebaseAuth.instance.currentUser;
 
-    if (user == null) {
-      return const RoleSelectionView();   // Always show role selection if not logged in
-    }
+if (user == null) {
+  return const RoleSelectionView();
+}
 
-    return const DashboardView();   // Logged in user goes to Dashboard
+final email = user.email;
+
+if (email == null) {
+  return const RoleSelectionView(); 
+}
+
+return DashboardView(userEmail: email);
   }
 }
