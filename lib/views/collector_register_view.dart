@@ -1,7 +1,5 @@
 // lib/views/collector_register_view.dart
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class CollectorRegisterView extends StatefulWidget {
   const CollectorRegisterView({super.key});
@@ -11,92 +9,61 @@ class CollectorRegisterView extends StatefulWidget {
 }
 
 class _CollectorRegisterViewState extends State<CollectorRegisterView> {
-  int _step = 1; // 1 = Personal, 2 = Collector Info, 3 = Success
+  int _step = 1; // 1 = Personal, 2 = Collector Info, 3 = Review
 
-  // Personal Info
+  // Step 1 Controllers
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // Collector Info
+  // Step 2 Controllers
   final _idNumberController = TextEditingController();
+  String? selectedExperience;
+  String? selectedVehicle;
   final _workingAreaController = TextEditingController();
 
-  // Image
-  File? _idCardImage;
-
+  // ignore: unused_field
   bool _agreeToTerms = false;
   bool _isLoading = false;
 
-  final primaryGreen = const Color(0xFF3C8D3E);
-  final ImagePicker _picker = ImagePicker();
+  final List<String> experiences = ["Less than 1 year", "1-3 years", "3-5 years", "More than 5 years"];
+  final List<String> vehicles = ["On Foot / Cart", "Motorcycle / Bajaj", "Small Truck", "Large Truck"];
 
-  // Camera Function
-  Future<void> _pickIdCardImage() async {
-    try {
-      final XFile? pickedFile = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 80,
-      );
-
-      if (pickedFile != null) {
-        setState(() {
-          _idCardImage = File(pickedFile.path);
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("✅ ID Card photo captured successfully"),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to open camera")),
-      );
-    }
-  }
-
-  void _nextStep() {
+  Future<void> _nextStep() async {
     if (_step == 1) {
-      if (_nameController.text.isEmpty || 
-          _phoneController.text.isEmpty || 
-          _emailController.text.isEmpty ||
-          _passwordController.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please fill all personal information")),
-        );
+      if (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all personal fields")));
         return;
       }
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Passwords do not match")),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
         return;
       }
       setState(() => _step = 2);
-    } 
-    else if (_step == 2) {
-      if (_idNumberController.text.isEmpty || _workingAreaController.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please fill National ID and Working Area")),
-        );
+    } else if (_step == 2) {
+      if (_idNumberController.text.isEmpty || selectedExperience == null || selectedVehicle == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please complete collector details")));
         return;
       }
-      if (!_agreeToTerms) {
+      setState(() => _step = 3);
+    } else {
+      // Submit
+      setState(() => _isLoading = true);
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please agree to the terms")),
+          const SnackBar(content: Text("✅ Application Submitted! Waiting for Admin Approval"), backgroundColor: Colors.green),
         );
-        return;
+        Navigator.pop(context);
       }
-      setState(() => _step = 3); // Success
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    const primaryGreen = Color(0xFF3C8D3E);
     const bgColor = Color(0xFFF2FFEE);
 
     return Scaffold(
@@ -114,43 +81,40 @@ class _CollectorRegisterViewState extends State<CollectorRegisterView> {
             children: [
               // Progress
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildStep(1, "Personal", _step >= 1),
-                  _buildStep(2, "ID & Area", _step >= 2),
-                  _buildStep(3, "Done", _step >= 3),
+                  _buildStep(1, "Personal"),
+                  _buildStep(2, "Info"),
+                  _buildStep(3, "Review"),
                 ],
               ),
               const SizedBox(height: 30),
 
               if (_step == 1) _buildPersonalStep()
-              else if (_step == 2) _buildCollectorInfoStep()
-              else _buildSuccessStep(),
+              else if (_step == 2) _buildCollectorStep()
+              else _buildReviewStep(),
 
               const SizedBox(height: 30),
 
-              if (_step < 3)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (_step > 1)
-                      OutlinedButton(
+              Row(
+                children: [
+                  if (_step > 1)
+                    Expanded(
+                      child: OutlinedButton(
                         onPressed: () => setState(() => _step--),
                         child: const Text("Back"),
-                      )
-                    else
-                      const SizedBox.shrink(),
-
-                    ElevatedButton(
-                      onPressed: _isLoading ? null : _nextStep,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryGreen,
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                       ),
-                      child: Text(_step == 2 ? "Submit Application" : "Continue"),
                     ),
-                  ],
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _nextStep,
+                      style: ElevatedButton.styleFrom(backgroundColor: primaryGreen),
+                      child: Text(_step == 3 ? "Submit Application" : "Continue"),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -158,22 +122,17 @@ class _CollectorRegisterViewState extends State<CollectorRegisterView> {
     );
   }
 
-  Widget _buildStep(int number, String title, bool isActive) {
+  Widget _buildStep(int number, String title) {
+    bool isActive = _step == number;
     return Column(
       children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isActive ? primaryGreen : Colors.grey.shade300,
-          ),
-          child: Center(
-            child: Text(number.toString(), style: TextStyle(color: isActive ? Colors.white : Colors.grey)),
-          ),
+        CircleAvatar(
+          radius: 14,
+          backgroundColor: isActive ? Colors.green : Colors.grey,
+          child: Text(number.toString(), style: const TextStyle(color: Colors.white, fontSize: 12)),
         ),
         const SizedBox(height: 4),
-        Text(title, style: TextStyle(fontSize: 12, color: isActive ? primaryGreen : Colors.grey)),
+        Text(title, style: TextStyle(fontSize: 12, color: isActive ? Colors.green : Colors.grey)),
       ],
     );
   }
@@ -183,9 +142,9 @@ class _CollectorRegisterViewState extends State<CollectorRegisterView> {
       children: [
         _buildTextField(_nameController, "Full Name", Icons.person),
         const SizedBox(height: 16),
-        _buildTextField(_phoneController, "Phone Number", Icons.phone, TextInputType.phone),
+        _buildTextField(_phoneController, "Phone Number", Icons.phone, keyboard: TextInputType.phone),
         const SizedBox(height: 16),
-        _buildTextField(_emailController, "Email Address", Icons.email, TextInputType.emailAddress),
+        _buildTextField(_emailController, "Email Address", Icons.email, keyboard: TextInputType.emailAddress),
         const SizedBox(height: 16),
         _buildPasswordField(_passwordController, "Password"),
         const SizedBox(height: 16),
@@ -194,90 +153,62 @@ class _CollectorRegisterViewState extends State<CollectorRegisterView> {
     );
   }
 
-  Widget _buildCollectorInfoStep() {
+  Widget _buildCollectorStep() {
     return Column(
       children: [
-        // National ID with Camera Button
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: _buildTextField(_idNumberController, "National ID / Kebele ID Number", Icons.badge),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _pickIdCardImage,
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text("Scan"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryGreen,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                ),
-                if (_idCardImage != null)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Text("✓ Photo Taken", style: TextStyle(color: Colors.green, fontSize: 12)),
-                  ),
-              ],
-            ),
-          ],
-        ),
-
+        _buildTextField(_idNumberController, "National ID / Kebele ID", Icons.badge),
         const SizedBox(height: 20),
-
-        _buildTextField(_workingAreaController, "Preferred Working Area", Icons.location_city),
-
-        const SizedBox(height: 24),
-
-        Row(
-          children: [
-            Checkbox(
-              value: _agreeToTerms,
-              onChanged: (val) => setState(() => _agreeToTerms = val ?? false),
-              activeColor: primaryGreen,
-            ),
-            const Expanded(
-              child: Text("I agree to the terms and conditions for collectors"),
-            ),
-          ],
+        const Text("Years of Experience", style: TextStyle(fontWeight: FontWeight.w600)),
+        DropdownButtonFormField<String>(
+          value: selectedExperience,
+          decoration: const InputDecoration(border: OutlineInputBorder()),
+          items: experiences.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          onChanged: (v) => setState(() => selectedExperience = v),
         ),
+        const SizedBox(height: 20),
+        const Text("Vehicle Type", style: TextStyle(fontWeight: FontWeight.w600)),
+        DropdownButtonFormField<String>(
+          value: selectedVehicle,
+          decoration: const InputDecoration(border: OutlineInputBorder()),
+          items: vehicles.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          onChanged: (v) => setState(() => selectedVehicle = v),
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(_workingAreaController, "Preferred Working Area", Icons.location_city),
       ],
     );
   }
 
-  Widget _buildSuccessStep() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildReviewStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Review your information", style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+        _buildReviewItem("Name", _nameController.text),
+        _buildReviewItem("Phone", _phoneController.text),
+        _buildReviewItem("Email", _emailController.text),
+        _buildReviewItem("ID Number", _idNumberController.text),
+        _buildReviewItem("Experience", selectedExperience ?? "-"),
+        _buildReviewItem("Vehicle", selectedVehicle ?? "-"),
+        _buildReviewItem("Area", _workingAreaController.text),
+      ],
+    );
+  }
+
+  Widget _buildReviewItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
         children: [
-          const Icon(Icons.check_circle, size: 100, color: Colors.green),
-          const SizedBox(height: 24),
-          const Text(
-            "Application Submitted Successfully!",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            "Your application is under review.\nYou will be notified once approved.",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(backgroundColor: primaryGreen),
-            child: const Text("Back to Login"),
-          ),
+          SizedBox(width: 120, child: Text(label + ":", style: const TextStyle(fontWeight: FontWeight.w500))),
+          Expanded(child: Text(value.isEmpty ? "-" : value)),
         ],
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, [TextInputType keyboard = TextInputType.text]) {
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {TextInputType keyboard = TextInputType.text}) {
     return TextField(
       controller: controller,
       keyboardType: keyboard,

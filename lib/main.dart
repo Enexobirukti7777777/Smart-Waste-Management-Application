@@ -3,7 +3,10 @@ import 'package:collector_app/views/collector_available_requests_view.dart';
 import 'package:collector_app/views/collector_dashboard_view.dart';
 // ignore: unused_import
 import 'package:collector_app/views/collector_home_view.dart';
+import 'package:collector_app/views/collector_job_history.dart';
 import 'package:collector_app/views/collector_my_tasks_view.dart';
+import 'package:collector_app/views/collector_pickup_detail_view.dart';
+import 'package:collector_app/views/collector_profile_view.dart';
 // ignore: unused_import
 import 'package:collector_app/views/collector_register_view.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +34,13 @@ collectorLoginRoute: (context) => const CollectorLoginView(),
 collectorMyTasksRoute: (context) => const CollectorMyTasksView(),
   collectorDashboardRoute: (context) => const CollectorDashboardView(),
   collectorAvailableRequestsRoute: (context) => const CollectorAvailableRequestsView(),
+  collectorRegisterRoute: (_) => const CollectorRegisterView(),
+  collectorPickupDetailRoute: (ctx) => CollectorPickupDetailView(
+    request: ModalRoute.of(ctx)!.settings.arguments as Map<String, dynamic>,
+  ),
+  collectorProfileRoute: (_) => const CollectorProfileView(),
+  collectorJobHistoryRoute: (_) => const CollectorJobHistoryView(),
+      
       },
     );
   }

@@ -1,6 +1,9 @@
 // lib/collector_views/collector_login_view.dart
+// ignore_for_file: unused_element
+
 import 'package:collector_app/constants/routes.dart';
 import 'package:collector_app/services/api_service.dart';
+import 'package:collector_app/views/collector_register_view.dart';
 import 'package:flutter/material.dart';
 
 class CollectorLoginView extends StatefulWidget {
@@ -15,6 +18,7 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  // ignore: unused_field
   bool _isLoading = false;
 
   Future<void> _login() async {
@@ -81,18 +85,31 @@ class _CollectorLoginViewState extends State<CollectorLoginView> {
 
               const SizedBox(height: 40),
 
-              ElevatedButton(
-                onPressed: _isLoading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryGreen,
-                  minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Login as Collector", style: TextStyle(fontSize: 18)),
-              ),
+                            const SizedBox(height: 20),
 
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account? "),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const CollectorRegisterView(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Register as Collector",
+                      style: TextStyle(
+                        color: Color(0xFF3C8D3E),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 30),
               TextButton(
                 onPressed: () {},

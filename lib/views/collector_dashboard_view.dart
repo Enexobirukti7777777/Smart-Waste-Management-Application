@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class CollectorDashboardView extends StatelessWidget {
   const CollectorDashboardView({super.key});
-
+    
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF3C8D3E);
