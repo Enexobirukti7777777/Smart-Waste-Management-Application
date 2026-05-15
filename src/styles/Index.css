@@ -1,0 +1,177 @@
+/* src/styles/index.css */
+
+/* ==================== ROOT & COLOR VARIABLES ==================== */
+:root {
+  --eco-green: #2e7d32;
+  --eco-green-dark: #1b5e20;
+  --bg: #f8fff8;
+  --text: #1a1a1a;
+  --card-bg: #ffffff;
+}
+
+/* ==================== GLOBAL STYLES ==================== */
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  background: linear-gradient(135deg, #f8fff8 0%, #e8f5e9 100%);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==================== WELCOME CARD & HERO ==================== */
+.leaf-bg {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  overflow: hidden;
+}
+
+.leaf-bg::after {
+  content: "🌿 🍃 🌱";
+  position: absolute;
+  bottom: -80px;
+  right: -60px;
+  font-size: 140px;
+  opacity: 0.07;
+  pointer-events: none;
+  transform: rotate(-12deg);
+  z-index: 0;
+}
+
+.welcome-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 0 auto; /* Centers the card */
+  padding: 40px 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-btn {
+  background: var(--eco-green);
+  border: none;
+  font-weight: 600;
+  padding: 0.9rem 2.6rem;
+  border-radius: 50px;
+  box-shadow: 0 5px 18px rgba(46, 125, 50, 0.3);
+  transition: all 0.25s;
+  font-size: 1.1rem;
+}
+
+.cta-btn:hover {
+  background: var(--eco-green-dark);
+  transform: scale(1.06);
+  box-shadow: 0 8px 24px rgba(46, 125, 50, 0.4);
+}
+
+/* ==================== FEATURE CARDS ==================== */
+.feature-card {
+  background: var(--card-bg);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.28s ease;
+  height: 100%;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 16px 40px rgba(46, 125, 50, 0.18);
+}
+
+.icon-circle {
+  width: 68px;
+  height: 68px;
+  background: #e8f5e9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  color: var(--eco-green);
+  margin: 0 auto 1.25rem;
+}
+
+/* ==================== LAYOUT - MAIN CONTENT & SIDEBAR ==================== */
+.main-content {
+  transition: margin-left 0.3s ease;
+  padding: 20px 15px;
+  width: 100%;
+  min-height: calc(100vh - 70px);
+}
+
+/* Desktop: Sidebar pushes content */
+@media (min-width: 992px) {
+  .main-content {
+    margin-left: 260px;
+    padding: 30px 40px;
+  }
+}
+
+/* Mobile: Full width, no left margin */
+@media (max-width: 991.98px) {
+  .main-content {
+    margin-left: 0 !important;
+    padding: 15px 12px;
+  }
+}
+
+/* Center content inside Home page */
+.row.g-4 {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.text-center.pb-5 {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ==================== NAVIGATION ==================== */
+.mobile-nav {
+  font-size: 0.95rem;
+  white-space: nowrap;
+  padding: 8px 10px;
+}
+
+@media (max-width: 992px) {
+  .mobile-nav {
+    font-size: 0.95rem;
+    padding: 6px 8px;
+  }
+}
+
+/* ==================== SCROLLBAR & MISC ==================== */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Extra safety for full height */
+.vh-100 {
+  height: 100vh !important;
+}
